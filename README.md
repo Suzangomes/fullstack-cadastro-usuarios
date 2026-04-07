@@ -1,8 +1,8 @@
-# Projeto Fullstack - Cadastro de Usuários
+Projeto Fullstack - Cadastro de Usuários
 
 Este é um projeto fullstack de cadastro de usuários, desenvolvido com foco em prática de integração entre front-end, back-end e banco de dados.
 
-# Tecnologias utilizadas
+Tecnologias utilizadas
 
 - Node.js
 - Express
@@ -10,7 +10,7 @@ Este é um projeto fullstack de cadastro de usuários, desenvolvido com foco em 
 - JavaScript
 - HTML e CSS
 
-# Funcionalidades
+Funcionalidades
 
 - Cadastro de usuários
 - Validação de campos obrigatórios
