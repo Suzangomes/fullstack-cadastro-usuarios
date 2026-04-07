@@ -1,20 +1,24 @@
+// 🔐 Carregar variáveis de ambiente
 require('dotenv').config();
 
-console.log("Arquivo iniciado");
-
+// 📦 Importações
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+// 🚀 Inicializar app
 const app = express();
 
+// 🔧 Middlewares
 app.use(express.json());
 app.use(cors());
 
+// 🌐 Conexão com MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Consegui conectar ao MongoDB'))
-  .catch(erro => console.error('Erro ao conectar no MongoDB:', erro));
+  .then(() => console.log('✅ Conectado ao MongoDB'))
+  .catch(erro => console.error('❌ Erro ao conectar no MongoDB:', erro));
 
+// 📄 Schema do usuário
 const UsuarioSchema = new mongoose.Schema({
   nome: String,
   sobrenome: String,
@@ -22,41 +26,46 @@ const UsuarioSchema = new mongoose.Schema({
   senha: String
 });
 
+// 📦 Model
 const Usuario = mongoose.model("usuario", UsuarioSchema);
 
-// ROTA DE TESTE
+// 🧪 Rota de teste
 app.get('/', (req, res) => {
   res.send("Servidor está funcionando 🚀");
 });
 
-app.post('/cadastro', (req, res) => {
+// 📝 Rota de cadastro
+app.post('/cadastro', async (req, res) => {
+  try {
+    console.log("📥 BODY RECEBIDO:", req.body);
 
-  console.log("BODY RECEBIDO:", req.body);
+    const { nome, sobrenome, email, senha } = req.body;
 
-  const { nome, sobrenome, email, senha } = req.body;
+    // 🔎 Validação básica
+    if (!nome || !sobrenome || !email || !senha) {
+      return res.status(400).json({ message: "Preencha todos os campos." });
+    }
 
-  Usuario.findOne({ email })
-    .then(usuarioExistente => {
+    // 🔍 Verifica se já existe
+    const usuarioExistente = await Usuario.findOne({ email });
 
-      if (usuarioExistente) {
-        return res.status(400).json({ message: "E-mail já cadastrado." });
-      }
+    if (usuarioExistente) {
+      return res.status(400).json({ message: "E-mail já cadastrado." });
+    }
 
-      const novoUsuario = new Usuario({ nome, sobrenome, email, senha });
+    // 💾 Salvar usuário
+    const novoUsuario = new Usuario({ nome, sobrenome, email, senha });
+    await novoUsuario.save();
 
-      return novoUsuario.save();
-    })
-    .then(() => {
-      res.status(200).json({ message: "Cadastro realizado com sucesso." });
-    })
-    .catch(error => {
-      console.error("Erro no cadastro:", error);
-      res.status(500).json({ message: "Erro no servidor." });
-    });
+    res.status(200).json({ message: "Cadastro realizado com sucesso." });
 
+  } catch (error) {
+    console.error("🔥 ERRO COMPLETO:", error);
+    res.status(500).json({ message: "Erro interno no servidor." });
+  }
 });
 
-// ⬇️ O listen TEM que ficar FORA de tudo
+// 🚀 Iniciar servidor
 app.listen(3000, () => {
-  console.log("API rodando no endereço http://localhost:3000");
+  console.log("🚀 API rodando em http://localhost:3000");
 });
